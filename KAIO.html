@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FL Web Studio</title>
+  <style>
+    /* --- CONFIGURAÇÕES GERAIS --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background-color: #18181c;
+      color: #e0e0e0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    /* --- CONTAINER PRINCIPAL --- */
+    .app-container {
+      background-color: #23232a;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      padding: 25px;
+      width: 100%;
+      max-width: 850px;
+      border: 1px solid #33333d;
+    }
+
+    /* --- CABEÇALHO --- */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid #33333d;
+    }
+
+    h1 {
+      font-size: 1.6rem;
+      color: #ff9800;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* --- PAINEL DE CONTROLES --- */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .btn-play {
+      background: linear-gradient(135deg, #ff9800, #f57c00);
+      border: none;
+      color: #121212;
+      padding: 10px 24px;
+      font-weight: 700;
+      font-size: 0.95rem;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+    }
+
+    .btn-play:hover {
+      background: linear-gradient(135deg, #ffa726, #fb8c00);
+      transform: translateY(-1px);
+    }
+
+    .btn-play:active {
+      transform: translateY(1px);
+    }
+
+    .bpm-control {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #aaa;
+    }
+
+    .bpm-control input {
+      width: 65px;
+      padding: 8px;
+      background: #18181c;
+      color: #00e5ff;
+      border: 1px solid #444452;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .bpm-control input:focus {
+      border-color: #00e5ff;
+    }
+
+    /* --- RACK DE CANAIS (CHANNEL RACK) --- */
+    .rack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background-color: #1d1d23;
+      padding: 15px;
+      border-radius: 8px;
+      border: 1px solid #2a2a35;
+    }
+
+    .channel {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .channel-name {
+      width: 130px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #00e5ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background: #252530;
+      padding: 8px 10px;
+      border-radius: 4px;
+      border-left: 3px solid #00e5ff;
+    }
+
+    /* Cor diferente para os canais de sinteto/melodia */
+    .channel:nth-child(4) .channel-name,
+    .channel:nth-child(5) .channel-name,
+    .channel:nth-child(6) .channel-name,
+    .channel:nth-child(7) .channel-name {
+      color: #ff4081;
+      border-left-color: #ff4081;
+    }
+
+    /* --- PASSOS DO SEQUENCIADOR (STEPS) --- */
+    .steps {
+      display: flex;
+      gap: 4px;
+      flex-grow: 1;
+    }
+
+    .step {
+      flex: 1;
+      height: 36px;
+      background: #2a2a36;
+      border: 1px solid #383848;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.1s ease;
+    }
+
+    /* Agrupamento visual estilo FL Studio (4 em 4 tempos) */
+    .step:nth-child(4n+1),
+    .step:nth-child(4n+2),
+    .step:nth-child(4n+3),
+    .step:nth-child(4n+4) {
+      background: #2d2d3a;
+    }
+
+    .step:nth-child(8n+5),
+    .step:nth-child(8n+6),
+    .step:nth-child(8n+7),
+    .step:nth-child(8n+8) {
+      background: #22222c;
+    }
+
+    .step:hover {
+      border-color: #666;
+    }
+
+    /* Passo Ativo Bateria (Laranja) */
+    .step.active {
+      background: #ff9800 !important;
+      box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
+      border-color: #ffe0b2;
+    }
+
+    /* Passo Ativo VST Melodia (Rosa) */
+    .channel:nth-child(4) .step.active,
+    .channel:nth-child(5) .step.active,
+    .channel:nth-child(6) .step.active,
+    .channel:nth-child(7) .step.active {
+      background: #ff4081 !important;
+      box-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
+      border-color: #ff80ab;
+    }
+
+    /* Agulha de Reprodução (Passo Atual) */
+    .step.current {
+      border: 2px solid #ffffff !important;
+      filter: brightness(1.3);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-container">
+    <header>
+      <h1>🎹 FL Web Studio</h1>
+      
+      <div class="controls">
+        <button id="playBtn" class="btn-play">▶ Play / Pause</button>
+        <div class="bpm-control">
+          <label for="bpmInput">BPM</label>
+          <input type="number" id="bpmInput" value="120" min="60" max="200">
+        </div>
+      </div>
+    </header>
+
+    <div class="rack" id="rack"></div>
+  </div>
+
+  <script>
+    const AudioContext = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    const TOTAL_STEPS = 16;
+    let currentStep = 0;
+    let isPlaying = false;
+    let intervalId = null;
+
+    // Lista de canais (Bateria + Notas de Sintetizador VST)
+    const channels = [
+      { name: 'Kick (Bumbo)', type: 'synth-kick', steps: Array(16).fill(false) },
+      { name: 'Snare (Caixa)', type: 'synth-snare', steps: Array(16).fill(false) },
+      { name: 'Hi-Hat (Prato)', type: 'synth-hihat', steps: Array(16).fill(false) },
+      { name: 'Synth (C4)', type: 'note', freq: 261.63, steps: Array(16).fill(false) },
+      { name: 'Synth (E4)', type: 'note', freq: 329.63, steps: Array(16).fill(false) },
+      { name: 'Synth (G4)', type: 'note', freq: 392.00, steps: Array(16).fill(false) },
+      { name: 'Synth (B4)', type: 'note', freq: 493.88, steps: Array(16).fill(false) }
+    ];
+
+    // --- SINTETIZADORES DE ÁUDIO ---
+
+    // KICK (BUMBO)
+    function playKick(time) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.frequency.setValueAtTime(150, time);
+      osc.frequency.exponentialRampToValueAtTime(0.01, time + 0.5);
+      gain.gain.setValueAtTime(1, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.5);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(time);
+      osc.stop(time + 0.5);
+    }
+
+    // SNARE (CAIXA REALISTA COM ESTEIRA DE RUÍDO)
+    function playSnare(time) {
+      // Corpo Tonal
+      const osc = audioCtx.createOscillator();
+      const oscGain = audioCtx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(180, time);
+      osc.frequency.exponentialRampToValueAtTime(40, time + 0.1);
+      oscGain.gain.setValueAtTime(0.5, time);
+      oscGain.gain.exponentialRampToValueAtTime(0.01, time + 0.1);
+      osc.connect(oscGain);
+      oscGain.connect(audioCtx.destination);
+      osc.start(time);
+      osc.stop(time + 0.1);
+
+      // Ruído da Esteira
+      const bufferSize = audioCtx.sampleRate * 0.2;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 1000;
+
+      const noiseGain = audioCtx.createGain();
+      noiseGain.gain.setValueAtTime(0.6, time);
+      noiseGain.gain.exponentialRampToValueAtTime(0.01, time + 0.2);
+
+      noise.connect(filter);
+      filter.connect(noiseGain);
+      noiseGain.connect(audioCtx.destination);
+
+      noise.start(time);
+      noise.stop(time + 0.2);
+    }
+
+    // HI-HAT (CHIMBAU SECO E AGUDO)
+    function playHiHat(time) {
+      const bufferSize = audioCtx.sampleRate * 0.05;
+      const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < bufferSize; i++) {
+        data[i] = Math.random() * 2 - 1;
+      }
+
+      const noise = audioCtx.createBufferSource();
+      noise.buffer = buffer;
+
+      const filter = audioCtx.createBiquadFilter();
+      filter.type = 'highpass';
+      filter.frequency.value = 7000;
+
+      const gain = audioCtx.createGain();
+      gain.gain.setValueAtTime(0.3, time);
+      gain.gain.exponentialRampToValueAtTime(0.01, time + 0.05);
+
+      noise.connect(filter);
+      filter.connect(gain);
+      gain.connect(audioCtx.destination);
+
+      noise.start(time);
+      noise.stop(time + 0.05);
+    }
+
+    // SINTETIZADOR VST PARA MELODIA
+    function playNote(freq, time) {
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sawtooth';
+      osc.frequency.setValueAtTime(freq, time);
+      gain.gain.setValueAtTime(0.15, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.4);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(time);
+      osc.stop(time + 0.4);
+    }
+
+    // --- MONTAGEM DA INTERFACE ---
+    const rackEl = document.getElementById('rack');
+
+    channels.forEach((ch, chIdx) => {
+      const row = document.createElement('div');
+      row.className = 'channel';
+
+      const label = document.createElement('div');
+      label.className = 'channel-name';
+      label.innerText = ch.name;
+      row.appendChild(label);
+
+      const stepsContainer = document.createElement('div');
+      stepsContainer.className = 'steps';
+
+      for (let s = 0; s < TOTAL_STEPS; s++) {
+        const stepBtn = document.createElement('div');
+        stepBtn.className = 'step';
+        stepBtn.dataset.ch = chIdx;
+        stepBtn.dataset.step = s;
+
+        stepBtn.addEventListener('click', () => {
+          ch.steps[s] = !ch.steps[s];
+          stepBtn.classList.toggle('active', ch.steps[s]);
+        });
+
+        stepsContainer.appendChild(stepBtn);
+      }
+
+      row.appendChild(stepsContainer);
+      rackEl.appendChild(row);
+    });
+
+    // --- LOOP DE REPRODUÇÃO ---
+    function stepTick() {
+      if (!audioCtx) return;
+
+      const time = audioCtx.currentTime;
+
+      document.querySelectorAll('.step').forEach(el => el.classList.remove('current'));
+
+      channels.forEach((ch, chIdx) => {
+        const stepEl = document.querySelector(`.step[data-ch="${chIdx}"][data-step="${currentStep}"]`);
+        if (stepEl) stepEl.classList.add('current');
+
+        if (ch.steps[currentStep]) {
+          if (ch.type === 'synth-kick') playKick(time);
+          if (ch.type === 'synth-snare') playSnare(time);
+          if (ch.type === 'synth-hihat') playHiHat(time);
+          if (ch.type === 'note') playNote(ch.freq, time);
+        }
+      });
+
+      currentStep = (currentStep + 1) % TOTAL_STEPS;
+    }
+
+    // CONTROLO DE PLAY / PAUSE
+    document.getElementById('playBtn').addEventListener('click', () => {
+      if (!audioCtx) {
+        audioCtx = new AudioContext();
+      }
+
+      if (isPlaying) {
+        clearInterval(intervalId);
+        isPlaying = false;
+      } else {
+        isPlaying = true;
+        currentStep = 0;
+        const bpm = parseInt(document.getElementById('bpmInput').value, 10);
+        const intervalMs = (60 / bpm / 4) * 1000;
+        stepTick();
+        intervalId = setInterval(stepTick, intervalMs);
+      }
+    });
+  </script>
+</body>
+</html>
