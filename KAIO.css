@@ -1,0 +1,206 @@
+/* ==========================================
+   MINI FL STUDIO - ESTILOS (style.css)
+   ========================================== */
+
+/* --- RESET E ESTILOS GERAIS --- */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+  background-color: #18181c;
+  color: #e0e0e0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* --- CONTAINER PRINCIPAL --- */
+.app-container {
+  background-color: #23232a;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 25px;
+  width: 100%;
+  max-width: 850px;
+  border: 1px solid #33333d;
+}
+
+/* --- CABEÇALHO --- */
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  padding-bottom: 15px;
+  border-bottom: 1px solid #33333d;
+}
+
+h1 {
+  font-size: 1.6rem;
+  color: #ff9800;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* --- PAINEL DE CONTROLES --- */
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.btn-play {
+  background: linear-gradient(135deg, #ff9800, #f57c00);
+  border: none;
+  color: #121212;
+  padding: 10px 24px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(255, 152, 0, 0.3);
+}
+
+.btn-play:hover {
+  background: linear-gradient(135deg, #ffa726, #fb8c00);
+  transform: translateY(-1px);
+}
+
+.btn-play:active {
+  transform: translateY(1px);
+}
+
+.bpm-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #aaa;
+}
+
+.bpm-control input {
+  width: 65px;
+  padding: 8px;
+  background: #18181c;
+  color: #00e5ff;
+  border: 1px solid #444452;
+  border-radius: 6px;
+  font-weight: bold;
+  text-align: center;
+  font-size: 1rem;
+  outline: none;
+}
+
+.bpm-control input:focus {
+  border-color: #00e5ff;
+}
+
+/* --- RACK DE CANAIS (CHANNEL RACK) --- */
+.rack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background-color: #1d1d23;
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid #2a2a35;
+}
+
+.channel {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.channel-name {
+  width: 130px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #00e5ff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: #252530;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border-left: 3px solid #00e5ff;
+}
+
+/* Destaque em rosa para as faixas do sintetizador/VST */
+.channel:nth-child(4) .channel-name,
+.channel:nth-child(5) .channel-name,
+.channel:nth-child(6) .channel-name,
+.channel:nth-child(7) .channel-name {
+  color: #ff4081;
+  border-left-color: #ff4081;
+}
+
+/* --- PASSOS DO SEQUENCIADOR (STEPS) --- */
+.steps {
+  display: flex;
+  gap: 4px;
+  flex-grow: 1;
+}
+
+.step {
+  flex: 1;
+  height: 36px;
+  background: #2a2a36;
+  border: 1px solid #383848;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+/* Agrupamento visual de 4 em 4 tempos (estilo FL Studio) */
+.step:nth-child(4n+1),
+.step:nth-child(4n+2),
+.step:nth-child(4n+3),
+.step:nth-child(4n+4) {
+  background: #2d2d3a;
+}
+
+.step:nth-child(8n+5),
+.step:nth-child(8n+6),
+.step:nth-child(8n+7),
+.step:nth-child(8n+8) {
+  background: #22222c;
+}
+
+.step:hover {
+  border-color: #666;
+}
+
+/* Passo Ativo Bateria (Laranja) */
+.step.active {
+  background: #ff9800 !important;
+  box-shadow: 0 0 10px rgba(255, 152, 0, 0.6);
+  border-color: #ffe0b2;
+}
+
+/* Passo Ativo Synth / VST (Rosa) */
+.channel:nth-child(4) .step.active,
+.channel:nth-child(5) .step.active,
+.channel:nth-child(6) .step.active,
+.channel:nth-child(7) .step.active {
+  background: #ff4081 !important;
+  box-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
+  border-color: #ff80ab;
+}
+
+/* Agulha de Reprodução (Step Atual) */
+.step.current {
+  border: 2px solid #ffffff !important;
+  filter: brightness(1.3);
+}
